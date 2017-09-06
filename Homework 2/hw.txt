@@ -1,0 +1,36 @@
+Problem 2:
+1. 6,4
+2. 6,3
+3. 6,5
+4. 7,5
+5. 8,5
+6. 8,6
+7. 8,7
+8. 8,8
+9. 7,8
+10. 6,6
+11. 5,4
+12. 4,4
+
+
+Problem 4:
+1. 6,4
+2. 5,4
+3. 6,5
+4. 6,3
+5. 4,4
+6. 6,6
+7. 7,5
+8. 3,4
+9. 4,5
+10. 8,5
+11. 2,4
+12. 4,6
+
+Stacks follow the premise of FILO(First In Last Out). The coordinates are pushed in the 
+order north, east, south and west respectively. Therefore,they would be popped in the 
+reverse order of west, south, east and north for the checks performed in pathExists.
+
+Queues follow the premise of FIFO(First In First Out). The coordinates are pushed
+in the same order of north, east, south and west respectively. However, they are also 
+popped in the same order they are pushed - north, east, south followed by west. 

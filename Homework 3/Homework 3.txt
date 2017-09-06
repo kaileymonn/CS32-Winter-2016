@@ -1,0 +1,362 @@
+class Landmark
+{
+public:
+	Landmark(string name)
+	{
+		m_name = name;
+	}
+	virtual string color() const = 0;
+	virtual string icon() const = 0;
+	string name() const { return m_name; }
+	virtual ~Landmark() {}
+private:
+	string m_name;
+};
+
+class Hotel : public Landmark
+{
+public:
+	Hotel(string name) : Landmark(name)
+	{
+		m_name = name;
+	}
+	virtual string color() const
+	{
+		return "yellow";
+	}
+	virtual string icon() const
+	{
+		return "bed";
+	}
+	virtual ~Hotel()
+	{
+		cout << "Destroying the hotel " << name() << "." << endl;
+	}
+private:
+	string m_name;
+};
+
+class Restaurant : public Landmark
+{
+public:
+	Restaurant(string name, int capacity) : Landmark(name)
+	{
+		m_name = name;
+		m_capacity = capacity;
+	}
+	virtual string color() const
+	{
+		return "yellow";
+	}
+	virtual string icon() const
+	{
+		if (m_capacity < 40)
+			return "small knife/fork";
+		return "large knife/fork";
+	}
+	virtual ~Restaurant()
+	{
+		cout << "Destroying the restaurant " << name() << "." << endl;
+	}
+private:
+	string m_name;
+	int m_capacity;
+};
+
+class Hospital : public Landmark
+{
+public:
+	Hospital(string name) : Landmark(name)
+	{
+		m_name = name;
+	}
+	virtual string color() const
+	{
+		return "blue";
+	}
+	virtual string icon() const
+	{
+		return "H";
+	}
+	virtual ~Hospital()
+	{
+		cout << "Destroying the hospital " << name() << "." << endl;
+	}
+private:
+	string m_name;
+};
+
+
+
+
+
+
+
+
+
+linear.cpp
+
+// Return true if the somePredicate function returns true for at
+// least one of the array elements, false otherwise.
+bool anyTrue(const double a[], int n)
+{
+	if (n <= 0) //no items
+		return false;
+	if (somePredicate(a[0]))
+		return true;
+	else
+		return anyTrue(a + 1, n - 1);
+}
+
+// Return the number of elements in the array for which the
+// somePredicate function returns true.
+int countTrue(const double a[], int n)
+{
+	if (n <= 0) return 0;
+	if (somePredicate(a[0])) return 1 + countTrue(a + 1, n - 1);
+	else
+		return countTrue(a + 1, n - 1);
+}
+
+// Return the subscript of the first element in the array for which
+// the somePredicate function returns true.  If there is no such
+// element, return -1.
+int firstTrue(const double a[], int n)
+{
+	if (n <= 0) return -1;
+	if (somePredicate(a[0])) return 0; //first element
+	else
+	{
+		if (firstTrue(a + 1, n - 1) == -1) return -1; //never returned true
+		return 1 + firstTrue(a + 1, n - 1); //returns the index
+	}
+}
+
+// Return the subscript of the smallest element in the array (i.e.,
+// the one whose value is <= the value of all elements).  If more
+// than one element has the same smallest value, return the smallest
+// subscript of such an element.  If the array has no elements to
+// examine, return -1.
+int indexOfMin(const double a[], int n)
+{
+	if (n <= 0) return -1;
+	int index = 1 + indexOfMin(a + 1, n - 1); //simplifying method
+	if (a[0] <= a[index]) return 0; //first item is the smallest
+	else
+		return index;
+}
+
+// If all n2 elements of a2 appear in the n1 element array a1, in
+// the same order (though not necessarily consecutively), then
+// return true; otherwise (i.e., if the array a1 does not include
+// a2 as a not-necessarily-contiguous subsequence), return false.
+// (Of course, if a2 is empty (i.e., n2 is 0), return true.)
+// For example, if a1 is the 7 element array
+//    10 50 40 20 50 40 30
+// then the function should return true if a2 is
+//    50 20 30
+// or
+//    50 40 40
+// and it should return false if a2 is
+//    50 30 20
+// or
+//    10 20 20
+bool includes(const double a1[], int n1, const double a2[], int n2)
+{	
+	if (n2 > n1) return false;
+	if (n2 <= 0) return true;
+	else if (n1 <= 0) return false;
+	//search from back to front
+	if (a1[n1 - 1] == a2[n2 - 1]) return includes(a1, n1 - 1, a2, n2 - 1);
+	else
+		return includes(a1, n1 - 1, a2, n2); //decrement n1 only to check for next item
+}
+
+
+
+maze.cpp
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Coord
+{
+public:
+	Coord(int rr, int cc) : m_r(rr), m_c(cc) {}
+	int r() const { return m_r; }
+	int c() const { return m_c; }
+private:
+	int m_r;
+	int m_c;
+};
+
+bool pathExists(string maze[], int nRows, int nCols, int sr, int sc, int er, int ec)
+{
+	if (sr == er && sc == ec) return true; //yay
+
+	maze[sr][sc] = '%'; //mark start location as visited
+
+	if (maze[sr - 1][sc] == '.') //if North is unvisited, run pathexist from there
+	{
+		if (pathExists(maze, nRows, nCols, sr - 1, sc, er, ec)) return true;
+	}
+
+	if (maze[sr][sc+1] == '.') //East
+	{
+		if (pathExists(maze, nRows, nCols, sr, sc+1, er, ec)) return true;
+	}
+
+	if (maze[sr+1][sc] == '.') //South
+	{
+		if (pathExists(maze, nRows, nCols, sr+1, sc, er, ec)) return true;
+	}
+
+	if (maze[sr][sc-1] == '.') //West
+	{
+		if (pathExists(maze, nRows, nCols, sr, sc-1, er, ec)) return true;
+	}
+
+	return false;
+}
+
+int main()
+{
+	string maze[10] = {
+		"XXXXXXXXXX",
+		"X........X",
+		"XX.X.XXXXX",
+		"X..X.X...X",
+		"X..X...X.X",
+		"XXXX.XXX.X",
+		"X.X....XXX",
+		"X..XX.XX.X",
+		"X...X....X",
+		"XXXXXXXXXX"
+	};
+
+	if (pathExists(maze, 10, 10, 6, 4, 1, 1))
+		cout << "Solvable!" << endl;
+	else
+		cout << "Out of luck!" << endl;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include <iostream>
+#include <cassert>
+using namespace std;
+
+// Return the number of ways that all n2 elements of a2 appear
+// in the n1 element array a1 in the same order (though not
+// necessarily consecutively).  The empty sequence appears in a
+// sequence of length n1 in 1 way, even if n1 is 0.
+// For example, if a1 is the 7 element array
+//	10 50 40 20 50 40 30
+// then for this value of a2     the function must return
+//	10 20 40			1
+//	10 40 30			2
+//	20 10 40			0
+//	50 40 30			3
+int countIncludes(const double a1[], int n1, const double a2[], int n2)
+{
+	if (n2 > n1) return 0;
+	if (n2 <= 0) return 1;
+	else if (n1 <= 0) return 0;
+
+	if (a1[n1 - 1] == a2[n2 - 1]) return countIncludes(a1, n1 - 1, a2, n2 - 1) + countIncludes(a1, n1 - 1, a2, n2);
+	else
+		return countIncludes(a1, n1 - 1, a2, n2);
+}
+
+// Exchange two doubles
+void exchange(double& x, double& y)
+{
+	double t = x;
+	x = y;
+	y = t;
+}
+
+// Rearrange the elements of the array so that all the elements
+// whose value is > splitter come before all the other elements,
+// and all the elements whose value is < splitter come after all
+// the other elements.  Upon return, firstNotGreater is set to the
+// index of the first element in the rearranged array that is
+// <= splitter, or n if there is no such element, and firstLess is
+// set to the index of the first element that is < splitter, or n
+// if there is no such element.
+// In other words, upon return from the function, the array is a
+// permutation of its original value such that
+//   * for 0 <= i < firstNotGreater, a[i] > splitter
+//   * for firstNotGreater <= i < firstLess, a[i] == splitter
+//   * for firstLess <= i < n, a[i] < splitter
+// All the elements > splitter end up in no particular order.
+// All the elements < splitter end up in no particular order.
+void split(double a[], int n, double splitter,
+	int& firstNotGreater, int& firstLess)
+{
+	if (n < 0)
+		n = 0;
+
+	// It will always be the case that just before evaluating the loop
+	// condition:
+	//  firstNotGreater <= firstUnknown and firstUnknown <= firstLess
+	//  Every element earlier than position firstNotGreater is > splitter
+	//  Every element from position firstNotGreater to firstUnknown-1 is
+	//    == splitter
+	//  Every element from firstUnknown to firstLess-1 is not known yet
+	//  Every element at position firstLess or later is < splitter
+
+	firstNotGreater = 0;
+	firstLess = n;
+	int firstUnknown = 0;
+	while (firstUnknown < firstLess)
+	{
+		if (a[firstUnknown] < splitter)
+		{
+			firstLess--;
+			exchange(a[firstUnknown], a[firstLess]);
+		}
+		else
+		{
+			if (a[firstUnknown] > splitter)
+			{
+				exchange(a[firstNotGreater], a[firstUnknown]);
+				firstNotGreater++;
+			}
+			firstUnknown++;
+		}
+	}
+}
+
+// Rearrange the elements of the array so that
+// a[0] >= a[1] >= a[2] >= ... >= a[n-2] >= a[n-1]
+// If n <= 1, do nothing.
+void order(double a[], int n)
+{
+	if (n <= 1) return;
+	int firstNotGreater, firstLess;
+	split(a, n, a[n / 2], firstNotGreater, firstLess); //sorts with respect to midpoint at a[n/2]
+	order(a, firstNotGreater); //Sort left of midpoint
+	order(a + firstNotGreater, n - firstLess); //Sort right of midpoint
+
+	return;
+}
+
+int main()
+{
+	double a[10] = { 21,5,37,19,11,5 };
+	order(a, 3);
+	for (int i = 0; i < 6; i++)
+		cerr << a[i] << " ";
+}

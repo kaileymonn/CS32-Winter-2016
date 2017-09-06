@@ -1,0 +1,232 @@
+Design: 
+The Map doubly-linked list comprises 2 structures: dataPair which holds the key(KeyType)
+and value(ValueType), and mapNode which comprises a dataPair, a pointer to the previous 
+node and a pointer to the next node. A head pointer is used to point to the first node 
+while a tail pointer points to the last. The list is not arranged in any particular way
+apart from the order by which they were added, with the tail pointer pointing to the node
+that was most recently added. Subsequent new nodes are added to the tail end of the list.
+Also, the list is not circular nor does it use any dummy nodes.
+
+
+
+Pseudo Code:
+Map()
+Initialize map size to 0
+Set head and tail pointers to be null pointers
+
+~Map()
+If map is not empty
+	If there is only 1 node, delete it
+	Otherwise,
+		Create temporary pointer to traverse nodes via while loop
+		Set pointer to point to the next node and delete the previous node
+	Delete tail pointer which will be the remaining node after the loop
+
+Map(const Map& other)
+Initialize map size to 0
+set head and tail pointers to be null pointers
+for each map node in other, 
+	use get function to store key and value of that node
+	use insert function to input these values into current map
+
+Map& operator=(const Map& rhs)
+If current map and rhs are not equal
+	use copy-constructor to make temp map
+	swap current map with temp map
+return this pointer to current map
+
+bool insert(const KeyType& key, const ValueType& value)
+If map already contains key, return false
+Otherwise, create a new node
+	input key and value parameters
+	set prev and next pointers to NULL
+if map is empty, set head and tail pointer to this new node
+Otherwise, reorganize next and prev pointers
+make tail pointer point to this new node
+increment map size counter
+return true
+
+bool update(const KeyType& key, const ValueType& value)
+If map doesnt contain matching key, return false
+Otherwise, create temp pointer to traverse nodes looking for matching key
+set value in the node with matching key with the parameter value 
+return true
+
+bool insertOrUpdate(const KeyType& key, const ValueType& value)
+If map contains matching key, run update function
+Otherwise, run insert function
+return true
+
+bool erase(const KeyType& key)
+If map doesnt contain matching key, return false
+Otherwise, if there is only one node
+	Delete it and set head and tail pointers, decrement map size counter
+Otherwise, create temp node to traverse nodes in search of matching key
+If match at head,
+	organize pointers 
+	delete node
+Else if match at tail
+	organize pointers
+	delete node
+Else just reorganize pointers again
+	delete node
+Decrement map size counter
+return true
+
+bool contains(const KeyType& key)const
+Create temporary pointer to traverse nodes 
+If head is null, return false
+Otherwise, while pointer is not NULL,
+	If key matches
+	return true
+Otherwise, move on to next node
+Return false if no matches were found
+
+bool get(const KeyType& key, ValueType& value) const
+If no matching keys, return false
+Otherwise, make a temporary node to traverse nodes until match
+Set parameter value to value in the node
+Return true
+
+bool get(int i, KeyType& key, ValueType& value) const
+If int i is negative or larger than map size, return false
+Otherwise, make a temp pointer to traverse nodes via for loop to find ith node
+Set parameter key and value to key and value of the node
+Return true
+
+void swap(Map& other)
+Create temporary pointers to point to head and tail nodes of this map
+Set this map's head and tail pointers to point to head and tail of other
+Set other map's head and tail pointers to the temporary pointers made earlier
+Swap size values of the two maps
+
+bool combine(const Map& m1, const Map& m2, Map& result)
+Create temporary maps m1 and m2 to avoid aliasing, set them equal to parameter m1 and m2
+Initialize boolean weird to keep track of mismatched values
+Check if result map is empty, and clear if it is not
+Use for loop to traverse through m1 nodes
+	Obtain key and value from nodes
+	Check if m2 contains key, if it doesnt insert datapair into result
+	Otherwise, check value of matching key in m2
+		If both values match, insert datapair into result
+		otherwise set boolean weird to false
+Use for loop to traverse through m2 nodes
+	find key values that appear only in m2 and not m1
+	insert these nodes into result
+return boolean weird
+
+void subtract(const Map& m1, const Map& m2, Map& result)
+//Use algorithm from combine function
+Create temporary maps m1 and m2 to avoid aliasing, set them equal to parameter m1 and m2
+Check if result map is empty, and clear if it is not
+Use for loop to traverse through m1 nodes
+	Obtain key and value from nodes
+	Check if m2 contains key, if it doesnt insert datapair into result
+
+
+
+Test Cases:
+	KeyType k;
+	ValueType v;
+
+	Map m;
+	m.insert("pikachu", 1);
+	m.insert("charmander", 2);
+
+	Map* p = new Map(m);
+	assert(p->contains("pikachu")); 
+	assert(p->contains("char") == false);
+	Map* c = new Map();
+	*c = *p;
+	delete p;
+	assert(c->contains("pikachu")); 
+
+	cerr << "Copy constructor and assignment operators work" << endl;
+
+	Map hello; 
+	assert(hello.empty()); 
+	assert(hello.size() == 0); 
+	assert(hello.erase("meh") == false); 
+	assert(hello.contains("dog") == false); 
+	assert(hello.insert("Head", 0));
+	assert(!hello.empty()); 
+	assert(hello.size() == 1); 
+	assert(hello.contains("Head")); 
+	assert(!hello.insert("Head", 1)); 
+	assert(hello.size() == 1); 
+	hello.get("Head", v);
+	assert(v == 0); 
+	assert(!hello.erase("blah")); 
+	assert(hello.update("Head", 9)); 
+	hello.get("Head", v);
+	assert(v == 9); 
+	assert(hello.insert("Between", 8)); 
+	hello.get("Between", v);
+	assert(v == 8); 
+	hello.insertOrUpdate("Tail", 11);
+	hello.insertOrUpdate("Between", 10);
+	assert(hello.size() == 3); 
+	for (int i = 0; i<hello.size(); i++)
+	{
+		hello.get(i, k, v);
+		cerr << k << "->" << v << endl; 
+	}
+	assert(hello.contains("Head") && hello.contains("Between") && hello.contains("Tail"));
+	assert(!hello.contains("head")); 
+	cerr << "Passed basic tests" << endl;
+
+	Map oneNode;
+	oneNode.insert("blah", 1);
+	Map copyOneNode(oneNode); 
+	assert(copyOneNode.size() == 1); 
+	assert(copyOneNode.contains("blah")); 
+	Map goodbye;
+	hello.swap(goodbye); 
+	assert(hello.empty()); 
+	assert(goodbye.size() == 3);
+	for (int i = 0; i<goodbye.size(); i++)
+	{
+		goodbye.get(i, k, v);
+		cerr << k << "->" << v << endl;
+	}
+	goodbye.swap(hello); 
+	assert(goodbye.empty());
+	assert(hello.size() == 3);
+	for (int i = 0; i<hello.size(); i++)
+	{
+		hello.get(i, k, v);
+		cerr << k << "->" << v << endl; 
+	}
+
+	cerr << "Passed swap test" << endl;
+
+	hello.insert("lebron", 99);
+	hello.erase("lebron");
+	assert(hello.contains("lebron") == false);
+
+	cerr << "Passed erase test" << endl;
+
+	Map combineOne;
+	Map combineTwo;
+	Map combineResult;
+
+	combineOne.insert("hongyi", 77);
+	combineTwo.insert("hongyi", 88);
+	combineResult.insert("stupid", 100);
+	combineTwo.insert("colin", 66);
+	assert(combine(combineOne, combineTwo, combineResult) == false);
+	assert(combineResult.contains("hongyi") == false);
+	assert(combineResult.contains("colin") == true);
+
+	cerr << "Passed combine test" << endl;
+
+	Map subtracter;
+	subtracter.insert("yay", 11);
+	subtracter.insert("lolcs32", 22);
+	subtracter.insert("hongyi", 77);
+	subtract(subtracter, combineOne, combineResult);
+	assert(combineResult.contains("hongyi") == false);
+	assert(combineResult.contains("lolcs32") == true);
+
+	cerr << "Passed subtract test yay" << endl;
+
